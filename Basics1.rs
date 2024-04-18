@@ -56,8 +56,40 @@ tuples have a fixed size, they cannot grow or shrink once declared
 every element of an array must be of the same type
 arrays in rust have a fixed length
 
+fn keyword allows us to declare new functions
+rust doesnt care where functions are defined so long as the compiler can see them
+lines execute in the order in which they appear in main()
+
+
 
 */
+// in function signatures, we must declare the type of each parameter
+fn print_value(x : i32)
+{
+    println!("the value is {x}");
+}
+
+/*
+functions are made up of statements and optionally end in an expression
+statements are instructions that perform some action and do not return a value
+expressions evaluate to a resultant value, they do not include ending semicolons. if you add a semicolon to an expression it becomes a statement and it will not return a value
+
+functions can return values to the code that calls them
+we must declare the return type using an arrow
+you can return values early explicitly using the return keyword
+however we can also return values implicitly, which is synonymous with the value of teh final expression on the fucntion body
+
+*/
+
+fn returning_fun(x : i32) -> i32 {
+    return x;
+}
+
+fn implicit_fun() -> i32 {
+    10  // no ; so expression, returned implicitly
+}
+
+// the above only works if a expression is last in teh function and can therefore be returned
 
 
 
@@ -123,4 +155,49 @@ fn main() {  // main fucntion is the entry point into the program, fn declares a
     /*
     When you attempt to access an element using indexing, Rust will check that the index you’ve specified is less than the array length. If the index is greater than or equal to the length, Rust will panic. This check has to happen at runtime because the compiler can’t possibly know what value a user will enter when they run the code later.
     This is an example of Rust’s memory safety principles in action. In many low-level languages, this kind of check is not done, and when you provide an incorrect index, invalid memory can be accessed. Rust protects you against this kind of error by immediately exiting instead of allowing the memory access and continuing. */
+
+    let num = implicit_fun();  // return value of a function used to initialise a variable
+    println!("this is implicit_num returned: {num}");
+
+    // if statements, nothing special
+    let number = 5;
+    if number > 3 {
+        println!("number is greater than 3!");
+    }
+    else {
+        println!("number was not greater than 3!");
+    }
+
+    // conditions must evaluate to a boolean
+    // rust will not implicitly convert a non-bool to a boolean so be explicit
+    // else if lists can be replaced with match, similar to switch?
+
+    // because if is an expression, we can place it on the right side of a let to assign the outcome to a variable
+
+    let number2 = if number == 5 {6} else {4};
+    // number2 is bound to a value based on the outcome of the if expression
+    // both values must be of the same type
+
+    // the loop keyword tells Rust to execute a vlock of code over and over again forever or until you explicitly tell it to stop
+    let mut counter = 0;
+    let result = loop {   // loop executes here
+       println!("looping!");
+       counter += 1;
+
+       if counter == 5 {
+        break counter;  // you can return values from a loop by placing them after the break
+       }
+    }; 
+
+    // can also use continue 
+
+    println!("the result of the loop is {result}");
+
+    // loops can also have labels, useful when we have loops within loops
+    
+    let arr = [1,2,3,4,5,6];
+    for element in arr {  // for loop, similar to python
+        println!("{element}");
+    }
+
 }
