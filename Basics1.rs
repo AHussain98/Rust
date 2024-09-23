@@ -1,203 +1,93 @@
-use std::io;
+use std::env;
 
-// rust variables are immutable by default
+// by definition, once a variable is initialised, it cant be changed 
+// ! means macro invocation, not a function call
+// println! is a macro that prints text to the console
+
+// let statement declares a local variable
+// if a function body ends with an expression that is not followed by a semicolon, that's the function's return value
+// #[test] attribute above function definition means its a test function, skipped in normal compilation
+
+// Vec is Rust's growable vector type 
+
+// variables are immutable by default
 // when a variable is immutable, once a value is bound to a name, you cant change that value
-// mut keyword used to create changeable variables and indicate intention
 
-// constants are values that are bound to a name and are not allowed to change 
-// you cant use mut with constants, theyre always immutable
-// constants require data type to be specified and can exist in global scope
+// adding mut infront of variable decleration makes them mutable
 
-const HOURS_IN_SECONDS: u32 = 60 * 60;
+// let y : u64 = 1;  // wont work, you have to use const or static for global variables
 
-// Rust lets us declare a new variable with the same name as a previous variable
-// we say the first variable is shadowed by the second, which means the second is what the compiler sees when you use the name of the variable
-// we can shadow a variable by using the same name and repeat the use of the let keyword
-/*
- In effect, the second variable overshadows the first, taking any uses of the variable name to itself until either it itself is shadowed or the scope ends.
-*/
+// constants are valid for the entire time a program runs, within the scope in which they were declared
 
-/*
-shadowing is different from marking variable as mut because we get compile time error if we try to reassign to this variable without using the let keyword
-let allows us to perform transformations on value but ave the variable be immutable after those transformations are complete
-The other difference between mut and shadowing is that because we’re effectively creating a new variable when we use the let keyword again, we can change the type of the value but reuse the same name.
-*/
+// you can delcare a new variable with the same name as a previous variable, the first variable is shadowed by the second, which means the second variable is what the compiler will see when you use the name of the variable
 
-/*
-every value in rust is of a certain data type
-rust is statically typed, types must be known at compile time
-compiler can usually infer what type we want to use based on the value and how its used
+// Data Types:
+// rust is a statically typed language so we must know the types of all variables at compile time
+// compiler can infer what type we want based on the value and how we use it
+// we can add type annotations like : u32
 
-scalar type represents a single value, rust has 4 primary scalar types: 
-integers, floats, bools and chars
+// a scalar type represents a singular value, these are ints, floats, bools and chars
+// ints can be signed or unsigned
+// u32 takes up 32 bits of space
+// isize and usize depends on the architechure of the machine, 64 bits if on a 64 bit architecture
 
-integer types are numbers without fractional components
-i16 is signed int 16 bit, i32 is the default int type 
-u32 is unsigned int 32 bit
-Each signed variant can store numbers from -(2n - 1) to 2n - 1 - 1 inclusive, where n is the number of bits that variant uses. So an i8 can store numbers from -(27) to 27 - 1, which equals -128 to 127. Unsigned variants can store numbers from 0 to 2n - 1, so a u8 can store numbers from 0 to 28 - 1, which equals 0 to 255.
+/* Let’s say you have a variable of type u8 that can hold values between 0 and 255. If you try to change the variable to a value outside that range, such as 256, integer overflow will occur, which can result in one of two behaviors. */
+// if overflow occurs, Rust performs two’s complement wrapping. In short, values greater than the maximum value the type can hold “wrap around” to the minimum of the values the type can hold. In the case of a u8, the value 256 becomes 0, the value 257 becomes 1, and so on. The program won’t panic, but the variable will have a value that probably isn’t what you were expecting it to have. Relying on integer overflow’s wrapping behavior is considered an error.
 
-isize and usize are automatic sizes based on computer architecture
+/* Rust also has two primitive types for floating-point numbers, which are numbers with decimal points. Rust’s floating-point types are f32 and f64, which are 32 bits and 64 bits in size, respectively. The default type is f64 because on modern CPUs, it’s roughly the same speed as f32 but is capable of more precision.  */
 
-Let’s say you have a variable of type u8 that can hold values between 0 and 255. If you try to change the variable to a value outside that range, such as 256, integer overflow will occur, which can result in one of two behaviors. When you’re compiling in debug mode, Rust includes checks for integer overflow that cause your program to panic at runtime if this behavior occurs. Rust uses the term panicking when a program exits with an error
-When you’re compiling in release mode with the --release flag, Rust does not include checks for integer overflow that cause panics. Instead, if overflow occurs, Rust performs two’s complement wrapping. In short, values greater than the maximum value the type can hold “wrap around” to the minimum of the values the type can hold. In the case of a u8, the value 256 becomes 0, the value 257 becomes 1, and so on. The program won’t panic, but the variable will have a value that probably isn’t what you were expecting it to have. Relying on integer overflow’s wrapping behavior is considered an error.
+// compound types can group multiple values into one type, rust has 2 primitive compound types, tuples and arrays
 
-floating point type is f32 and f64, f32 is single precision float, f64 is double
+// tuple is a general way of grouping together a number of values with a variety of tyes into one compound type
+// tuples have a fixed length, once declared they cannot grow or shrink in size
 
-bool is only one byte in size
-
-char is with ' ', not "", and represents 4 bytes
-
-Integer division truncates toward zero to the nearest integer so -5/-3 is -1
-
-compound types can group multiple values into one type, rust has two primitive compound types : tuples and arrays
-tuple is a general way of grouping together a number of values with mukltiple types into one compound types
-tuples have a fixed size, they cannot grow or shrink once declared
-
-every element of an array must be of the same type
-arrays in rust have a fixed length
-
-fn keyword allows us to declare new functions
-rust doesnt care where functions are defined so long as the compiler can see them
-lines execute in the order in which they appear in main()
+// arrays, every element must be of the same type
 
 
 
-*/
-// in function signatures, we must declare the type of each parameter
-fn print_value(x : i32)
-{
-    println!("the value is {x}");
-}
-
-/*
-functions are made up of statements and optionally end in an expression
-statements are instructions that perform some action and do not return a value
-expressions evaluate to a resultant value, they do not include ending semicolons. if you add a semicolon to an expression it becomes a statement and it will not return a value
-
-functions can return values to the code that calls them
-we must declare the return type using an arrow
-you can return values early explicitly using the return keyword
-however we can also return values implicitly, which is synonymous with the value of teh final expression on the fucntion body
-
-*/
-
-fn returning_fun(x : i32) -> i32 {
-    return x;
-}
-
-fn implicit_fun() -> i32 {
-    10  // no ; so expression, returned implicitly
-}
-
-// the above only works if a expression is last in teh function and can therefore be returned
 
 
 
-fn main() {  // main fucntion is the entry point into the program, fn declares a new fucntion
+fn main() {
 
-    let mut x = 6;
-    x = 5;    // error, cannot assign twice to immutable variable, change x definition to mut will allow this
+    let t : u64 = 100;  // immutable
+    println!("the value of t is {t}");
+   // t = 101;  // error, cannot assign twice to immutable value
+    println!("the value of t is {t}");
 
-    println!("Guess the number");  // macro that prints to the screen
-    println!("Please enter your number");
 
-    let mut guess = String::new();  // let creates a new variable, variables are immutable by default
-    let apples = 5;  // immutable
+    let mut numbers = Vec::<u64>::new();
+    println!("Hello, world!");
 
-    // string::new() is a function that returns a new instance of a string, strings provided by the standard library
+    const x : u64 = 10;  // const, immutable by default, always immutable
+    // constants can be declared in any scope, even global scope
+    // constants may be set only to a constant expression, not the result of a value that can only be computed at runtime
+    const HOURS_IN_SECONDS: u32 = 60 * 60;  // doesnt need to be calculated at runtime, so valid
 
-    io::stdin()
-        .read_line(&mut guess)
-        .expect("Failed to read line");
-// &mut tells the function which object to store the result in
-// & indicates reference which means no copy of the object
-// references are immutable by default
-    println!("You guessed: {guess}");
+    // shadowing, reusing the name of a variable within scope
+    let y : u64 = 1;
+    let y = y + 1;  // to shadow, we have to use the let keyword
+    println!("the value of y is {y}");  //   shadowed successfully
 
-    let y = 9;
-    let y = y + 1;  // this replaces the previous y, value is now 10
-    {
-        let y = y + 1;  // this shadow only exists in this scope
-        println!("this is y in the scope: {y}");  // can use {} like in python
-    }
-    println!("this is y outside the scope: {y}");  // returns to being 10
+    let spaces = "   ";
+    let spaces = spaces.len();  // shadowing also lets us change type
+    // using mut here would cause an error since we couldn't mutate a variables type
 
-    let spaces = " ";  // string type
-    let spaces = spaces.len();  // change to number type, reuse the same name
-    
-    // if a type is mut, you are not allowed to shadow it
-    
-    let num : u32 = 64;
-    let floating_num = 64.00;  // this is f64 by default
+    let tup : (u32, String, bool) = (500, "hi everyone".to_string(), true);  // tuple
+    // we can get the elements from a tuple by pattern matching
+    let (x1,y1,z1) = tup;
+    let boolean = z1;
+    // we can also access elements in the tuple using the . operator
+    let first_element = tup.0;  // first element
 
-    let my_tup = (1.2, 55, "string", 'c');  // tuple, can have type annotations if wanted but not necessary
-    /*
-    The variable tup binds to the entire tuple because a tuple is considered a single compound element. To get the individual values out of a tuple, we can use pattern matching to destructure a tuple value
-     */
+    let arr1 = [1,2,3,4,5];
+    // arrays are useful when we want our data allocated on the stack rather than the heap
+    // arrays do not grow in size, vectors do and are allocated on the heap
+    let arr2: [i32;5] = [6,7,8,9,10];  // explicitly show the type and number of elements
+    let arr3 = [5; 10];  // contains 5 elements each with value 10
 
-    let (w1,x1,y1,z1) = my_tup;  // unpack the tuple with a pattern using let
-    println!("The third value in the tuple is {y1}");
+    // When you attempt to access an element using indexing, Rust will check that the index you’ve specified is less than the array length. If the index is greater than or equal to the length, Rust will panic. This check has to happen at runtime, especially in this case, because the compiler can’t possibly know what value a user will enter when they run the code later.
 
-    // we can also access tuple elements using . operator
-
-    let second_element = my_tup.1;  
-
-    let my_arr = [1,2,3,4,5];
-    // arrays are allocated on the stack rather than the heap, and we want to ensure a fixed number of elements
-    // vector is similar but it is allowed to grow or shrink in size
-    // arrays are more useful and efficient when we know the number of elements will not change
-
-    let typed_arr : [i32;3] = [1,2,3];  // typed array, 3 ints
-
-    let auto_arr = [3; 5];  // array of 5 elements all with value 3
-
-    // arrays are fixed size and on the stack, so can be accessed via index using []
-    /*
-    When you attempt to access an element using indexing, Rust will check that the index you’ve specified is less than the array length. If the index is greater than or equal to the length, Rust will panic. This check has to happen at runtime because the compiler can’t possibly know what value a user will enter when they run the code later.
-    This is an example of Rust’s memory safety principles in action. In many low-level languages, this kind of check is not done, and when you provide an incorrect index, invalid memory can be accessed. Rust protects you against this kind of error by immediately exiting instead of allowing the memory access and continuing. */
-
-    let num = implicit_fun();  // return value of a function used to initialise a variable
-    println!("this is implicit_num returned: {num}");
-
-    // if statements, nothing special
-    let number = 5;
-    if number > 3 {
-        println!("number is greater than 3!");
-    }
-    else {
-        println!("number was not greater than 3!");
-    }
-
-    // conditions must evaluate to a boolean
-    // rust will not implicitly convert a non-bool to a boolean so be explicit
-    // else if lists can be replaced with match, similar to switch?
-
-    // because if is an expression, we can place it on the right side of a let to assign the outcome to a variable
-
-    let number2 = if number == 5 {6} else {4};
-    // number2 is bound to a value based on the outcome of the if expression
-    // both values must be of the same type
-
-    // the loop keyword tells Rust to execute a vlock of code over and over again forever or until you explicitly tell it to stop
-    let mut counter = 0;
-    let result = loop {   // loop executes here
-       println!("looping!");
-       counter += 1;
-
-       if counter == 5 {
-        break counter;  // you can return values from a loop by placing them after the break
-       }
-    }; 
-
-    // can also use continue 
-
-    println!("the result of the loop is {result}");
-
-    // loops can also have labels, useful when we have loops within loops
-    
-    let arr = [1,2,3,4,5,6];
-    for element in arr {  // for loop, similar to python
-        println!("{element}");
-    }
+    // This is an example of Rust’s memory safety principles in action. In many low-level languages, this kind of check is not done, and when you provide an incorrect index, invalid memory can be accessed. Rust protects you against this kind of error by immediately exiting instead of allowing the memory access and continuing.  
 
 }
