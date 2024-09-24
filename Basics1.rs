@@ -43,6 +43,32 @@ use std::env;
 
 // arrays, every element must be of the same type
 
+// main function is the entry point of the program
+// fn keyword allows us to declare new functions
+
+fn another_function(x : i32)
+{
+    println!("This is another function!");
+}
+
+// Rust doesnt care where we define the function, only that they can be seen by the caller
+// lines execute in the order they appear in main()
+
+// in function signatures, you must declare the type of each parameter
+
+// statements are instructions that perform some action and do not return a value
+// expressions evaluate to a resultant value, they do not end in semi-colon
+// if you add a semicolon to the end of a statement, you turn it into an expression and it will not return a value
+
+// functions can also return values
+
+fn returning_function() -> u32{  // return type is 32
+    5  // return value of the fucntion is the result of the final expression in the block
+    // notice there is no semicolon, this is an expression!! not a statement
+}
+
+
+
 
 
 
@@ -89,5 +115,37 @@ fn main() {
     // When you attempt to access an element using indexing, Rust will check that the index you’ve specified is less than the array length. If the index is greater than or equal to the length, Rust will panic. This check has to happen at runtime, especially in this case, because the compiler can’t possibly know what value a user will enter when they run the code later.
 
     // This is an example of Rust’s memory safety principles in action. In many low-level languages, this kind of check is not done, and when you provide an incorrect index, invalid memory can be accessed. Rust protects you against this kind of error by immediately exiting instead of allowing the memory access and continuing.  
+    
+    another_function(5);
 
+    let num = returning_function();
+    println!("value returned is {num}");
+    
+    if num < 10 
+    {
+        println!("num is less than 10!");
+    }
+    
+    // rust will not automatically convert non boolean types to boolean, like C++ does with ints
+    
+    // we can use if in a let statement
+    let number = if num > 10 {1} else {0};  // here the value of number is conditional
+    
+    let mut count = 0;
+   let result = loop {   // loop keyword will loop forever until a break, loops can return values in Rust
+        println!("in the loop!");
+        if count == 5
+        {
+            break count;  // counter is returned, anything after the break can be returned from the loop
+        }
+        count += 1;
+        
+    };
+
+    // these loops can have labels with names, so you can choose which loop to break when there are nested loops 
+
+    // rust also has traditional for and while loops
+    for element in arr1{
+        println!("{element}");
+    }
 }
