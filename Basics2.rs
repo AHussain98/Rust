@@ -73,7 +73,19 @@ Data races cause undefined behavior and can be difficult to diagnose and fix whe
 you can have multiple immutable references, but only if there are no mutable ones
 */
 
+fn make_change(some_string: &mut String)  // pass in a mutable reference
+{
+    some_string.push_str(", added!");
+}
 
+
+/*
+At any given time, you can have either one mutable reference or any number of immutable references.
+References must always be valid, rust will not allow dangling references.
+*/
+
+// slices let you reference a contigous sequence of elements in a collection rather than the whole collection
+// slice is like a reference, it does not have ownership
 
 
 fn main() {
@@ -132,11 +144,58 @@ fn main() {
     // because it does not own it, the value it points to will not be dropped when the reference stops being used
     println!("The length of '{ss1}' is {len}.");
   
+    let mut mutstr = String:from("hello");
+    make_change(&mut mutstr);  // make it clear mutstr is passed as a mutable reference
   
+    // if we have a mutable reference to a value, we can have no other references to that value existing at the same time
+    {
+        let r1 = &mut mutstr;  //r1 is a mutable reference to mutstr
+    }  // r1 goes out of scope here, so we can create another mutable reference to mutstr
+
+    let r2 = &mut mutstr;  // works
+    // neat trick, using curly brackets to create a new scope
+    // we can have mutiple simultaenous immutable references to a variable, but not an immutable and mutable reference at the same time
+
+    // IMPORTANT NOTE:
+    // a references scope starts from where it is introduced and continues until the last time that the reference is used
+    let mut mutstr2 = String::from("hello");
+
+    let rr1 = &mutstr2; // no problem
+    let rr2 = &mutstr2; // no problem
+    println!("{r1} and {r2}");
+    // variables r1 and r2 will not be used after this point
+
+    let r3 = &mut mutstr2; // no problem
+    println!("{r3}");
+    //The scopes of the immutable references r1 and r2 end after the println! where they are last used, which is before the mutable reference r3 is created.
+    // These scopes don’t overlap, so this code is allowed: the compiler can tell that the reference is no longer being used at a point before the end of the scope.  
   
-  
-  
-  
+    // string slice is reference to part of a string
+    let sslice = String::from("Asad Hussain") ;
+    let firstname = &sslice[0..4];
+    // firstname is a reference to the first part of the string
+    // in memory, this is implemented as a pointer to the byte at the String's starting index and a length
+    // ending index is one more than the last position in the slice
+
+    //the type that signifies string slice is &str
+    /*
+    slices help us understand string literals, which are stored inside the binary
+    let s = "Hello, world!";
+    The type of s here is &str: it’s a slice pointing to that specific point of the binary. This is also why string literals are immutable; &str is an immutable reference.
+
+    Knowing that you can take slices of literals and String values leads us to one more improvement on first_word, and that’s its signature:
+
+fn first_word(s: &String) -> &str {
+A more experienced Rustacean would write the signature shown below instead because it allows us to use the same function on both &String values and &str values.
+
+fn first_word(s: &str) -> &str {
+ Improving the first_word function by using a string slice for the type of the s parameter
+
+If we have a string slice, we can pass that directly. If we have a String, we can pass a slice of the String or a reference to the String.
+
+you can also have slices of arrays, and other contigous types
+    */
+
   }  // drop is called here for s2, x and y are popped off stack first
 
 
