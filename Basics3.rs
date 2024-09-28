@@ -56,15 +56,43 @@ impl Rectangle {  // impl means implementation block, everything in this block h
     fn rect_area(&self) -> u32 {  // self is borrowed immutably, method cannot make changes
         self.width * self.length
     }
+
+    fn new(size : u32) -> Self {  // this is the constrictor, Self gets replaced with the type
+        Self {
+            width: size,
+            length : size
+        }
+    }  // The Self keywords in the return type and in the body of the function are aliases for the type that appears after the impl keyword, which in this case is Rectangle.
 }
 
 /*
 
 If we wanted to change the instance that we’ve called the method on as part of what the method does, we’d use &mut self as the first parameter. Having a method that takes ownership of the instance by using just self as the first parameter is rare; this technique is usually used when the method transforms self into something else and you want to prevent the caller from using the original instance after the transformation.
 
-6The main reason for using methods instead of functions, in addition to providing method syntax and not having to repeat the type of self in every method’s signature, is for organization. We’ve put all the things we can do with an instance of a type in one impl block rather than making future users of our code search for capabilities of Rectangle in various places in the library we provide.
+The main reason for using methods instead of functions, in addition to providing method syntax and not having to repeat the type of self in every method’s signature, is for organization. We’ve put all the things we can do with an instance of a type in one impl block rather than making future users of our code search for capabilities of Rectangle in various places in the library we provide.
+
+Methods can take multiple parameters that we add to the signature after the self parameter, and those parameters work just like parameters in functions.
+
+All functions defined within an impl block are associated functions because they're associated with the type after the impl. 
+
+We can define associated functions that don’t have self as their first parameter (and thus are not methods) because they don’t need an instance of the type to work with. We’ve already used one function like this: the String::from function that’s defined on the String type.
+
+A struct can have multiple impl blocks
 
 */
+
+// Where structs give you a way of grouping together related fields and data, like a Rectangle with its width and height, enums give you a way of saying a value is one of a possible set of values. 
+
+emun IpAddrKind {
+    V4,
+    V6
+}
+
+// IpAddrKind is now a custom data type that we can use elsewhere in our code
+// enums can also have their own impl blocks, to create associated functions
+
+//the Option<T> enum allows us to check for null values, the types within it are None or some<T>
+// the match expression is a control flow construct that runs code depending on the type of enum it is given
 
 
 fn main()
@@ -118,5 +146,17 @@ fn main()
     // println! is a macro that takes reference to an expression, no ownership
 
     rect1.rect_area();  // call the member function
+    
+    let sq = rectangle::new(5);  // call the associated function that acts as a constructor
+
+    let four = IpAddrKind::V4;
+    let six = IpAddrKind::V6;
+
+
+
 
 }
+
+fn route(ip_kind: IpAddrKind) {}   // function takes any IpAddrKind type
+
+
