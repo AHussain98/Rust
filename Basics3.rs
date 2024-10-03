@@ -83,7 +83,7 @@ A struct can have multiple impl blocks
 
 // Where structs give you a way of grouping together related fields and data, like a Rectangle with its width and height, enums give you a way of saying a value is one of a possible set of values. 
 
-emun IpAddrKind {
+enum IpAddrKind {
     V4,
     V6
 }
@@ -93,6 +93,35 @@ emun IpAddrKind {
 
 //the Option<T> enum allows us to check for null values, the types within it are None or some<T>
 // the match expression is a control flow construct that runs code depending on the type of enum it is given
+
+enum City {
+    London,
+    Birmingham,
+    Manchester
+}
+
+enum Coin {
+    Penny,
+    Pound,
+    Fifty,
+    Twenty(City)  // Twenty stores the value of a city enum within it
+}
+
+fn value_in_pennies(coin : Coin) -> u32  // whichever one matches with what we pass in, the corresponding u32 integer will be returned, same as C++ switch
+{
+    match coin{
+        Coin::Penny => 1,
+        Coin::Pound => 100,
+        Coin::Fifty => 50,
+        Coin::Twenty(city) => println!("Twenty Pence from {city}");
+        20
+        other => println!("other coin!"); 0  // this is a catch all, place this last!
+        // _ can be used as the catchall, this is common
+    }
+}
+
+// Matches in Rust are exhaustive: we must exhaust every last possibility in order for the code to be valid. Especially in the case of Option<T>, when Rust prevents us from forgetting to explicitly handle the None case
+
 
 
 fn main()
@@ -153,6 +182,7 @@ fn main()
     let six = IpAddrKind::V6;
 
 
+    
 
 
 }
